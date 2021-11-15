@@ -29,7 +29,7 @@ def add(x, y):
 def list_sum(arr):
     return sum(arr)
 
-with Flow(FLOW_NAME, storage=STORAGE, run_config=KubernetesRun(labels=["porbmv"],), executor = DaskExecutor(address="tcp://20.85.133.123:8786")) as flow:
+with Flow(FLOW_NAME, storage=STORAGE, run_config=KubernetesRun(labels=["porbmv"],), executor = DaskExecutor(address="tcp://10.244.3.60:8786")) as flow:
     incs = inc.map(x=range(100))
     decs = dec.map(x=range(100))
     adds = add.map(x=incs, y=decs)
