@@ -21,7 +21,7 @@ def inc(x):
 def dec(x):
     return x - 1
 
-@task
+@task   
 def add(x, y):
     return x + y
 
@@ -29,7 +29,9 @@ def add(x, y):
 def list_sum(arr):
     return sum(arr)
 
-with Flow(FLOW_NAME, storage=STORAGE, run_config=KubernetesRun(labels=["porbmv"],), executor = DaskExecutor()) as flow:
+with Flow(FLOW_NAME, storage=STORAGE, run_config=KubernetesRun(labels=["porbmv"],), executor = DaskExecutor(
+    cluster_class="dask_cloudprovider.aws.FargateCluster",
+    cluster_kwargs={"n_workers": 4, "image": "my-prefect-image"},)) as flow:
     incs = inc.map(x=range(100))
     decs = dec.map(x=range(100))
     adds = add.map(x=incs, y=decs)
