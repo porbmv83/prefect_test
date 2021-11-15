@@ -4,8 +4,8 @@ from prefect.run_configs import KubernetesRun
 
 FLOW_NAME = "etl"
 STORAGE = GitHub(
-    repo="PrefectHQ/prefect",
-    path=f"prefect/examples/old/{FLOW_NAME}.py",
+    repo="porbmv83/prefect_test",
+    path=f"{FLOW_NAME}.py",
     #access_token_secret="GITHUB_ACCESS_TOKEN",   required with private repositories
 )
 
@@ -15,17 +15,20 @@ def extract():
 
 
 @task
-def transform(x):
+def transform_1(x):
     return [i * 10 for i in x]
 
+def transform_2(x):
+    return [i * 10 for i in x]
 
 @task
-def load(y):
+def load(y, z):
     print("Received y: {}".format(y))
+    print("Received z: {}".format(z))
 
 
 with Flow(FLOW_NAME, storage=STORAGE, run_config=KubernetesRun(labels=["porbmv"],),) as flow:
     e = extract()
-    t = transform(e)
-    l = load(t)
-
+    t1 = transform_1(e)
+    t2 = transform_2(e)
+    l = load(t1, t2)
