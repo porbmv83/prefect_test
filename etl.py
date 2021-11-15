@@ -15,11 +15,12 @@ def extract():
 
 
 @task
-def transform_1(x):
-    return [i * 10 for i in x]
+def transform_1(x1):
+    return [i * 10 for i in x1]
 
-def transform_2(x):
-    return [i * 10 for i in x]
+@task
+def transform_2(x2):
+    return [i * 10 for i in x2]
 
 @task
 def load(y, z):
