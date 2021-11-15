@@ -4,6 +4,7 @@ import random
 from prefect.storage import GitHub
 from prefect.run_configs import KubernetesRun
 from prefect.executors import DaskExecutor
+from dask_cloudprovider.aws import FargateCluster
 
 FLOW_NAME = "dask_etl"
 STORAGE = GitHub(
