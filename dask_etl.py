@@ -32,7 +32,7 @@ def list_sum(arr):
 
 with Flow(FLOW_NAME, storage=STORAGE, run_config=KubernetesRun(labels=["porbmv"],), executor = DaskExecutor(
     cluster_class="dask_cloudprovider.azure.AzureVMCluster",
-    cluster_kwargs={"n_workers": 4, "image": "my-prefect-image"},)) as flow:
+    adapt_kwargs={"maximum": 4},)) as flow:
     incs = inc.map(x=range(100))
     decs = dec.map(x=range(100))
     adds = add.map(x=incs, y=decs)
