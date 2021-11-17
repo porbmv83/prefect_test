@@ -3,7 +3,7 @@ import datetime
 import random
 from prefect.storage import GitHub
 from prefect.run_configs import KubernetesRun
-from prefect.executors import DaskExecutor
+from prefect.environments import DaskKubernetesEnvironment
 
 FLOW_NAME = "dask_etl"
 STORAGE = GitHub(
@@ -32,7 +32,7 @@ def list_sum(arr):
 with Flow(FLOW_NAME, 
     storage=STORAGE, 
     run_config=KubernetesRun(env={"EXTRA_PIP_PACKAGES": "prefect dask distributed"}, labels=["porbmv"],), 
-    executor = DaskExecutor(address="tcp://10.0.125.48:8786")
+    environment=DaskKubernetesEnvironment(min_workers=1, max_workers=2)
     ) as flow:
     incs = inc.map(x=range(100))
     decs = dec.map(x=range(100))
