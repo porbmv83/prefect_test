@@ -32,7 +32,7 @@ def list_sum(arr):
 with Flow(FLOW_NAME, 
     storage=STORAGE, 
     run_config=KubernetesRun(env={"EXTRA_PIP_PACKAGES": "prefect dask distributed"}, labels=["porbmv"],), 
-    executor = DaskExecutor(address="tcp://52.188.220.131:8786")
+    executor = DaskExecutor(address="tcp://10.0.125.48:8786")
     ) as flow:
     incs = inc.map(x=range(100))
     decs = dec.map(x=range(100))
