@@ -1,4 +1,4 @@
-rom prefect import task, Flow, Parameter
+from prefect import task, Flow, Parameter
 import datetime
 import random
 from prefect.storage import GitHub
