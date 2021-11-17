@@ -4,7 +4,7 @@ import random
 from prefect.storage import GitHub
 from prefect.run_configs import KubernetesRun
 from prefect.executors import DaskExecutor
-from dask_cloudprovider.azure import AzureVMCluster
+from dask_cloudprovider.aws import FargateCluster
 
 FLOW_NAME = "dask_etl"
 STORAGE = GitHub(
@@ -32,8 +32,8 @@ def list_sum(arr):
 
 with Flow(FLOW_NAME, 
     storage=STORAGE, 
-    run_config=KubernetesRun(env={"EXTRA_PIP_PACKAGES": "prefect dask distributed dask_cloudprovider[azure]"}, labels=["porbmv"],), 
-    executor = DaskExecutor(cluster_class="dask_cloudprovider.azure.AzureVMCluster", cluster_kwargs={"image": "prefecthq/prefect:latest", "n_workers": 2, "location": "centralus"},)
+    run_config=KubernetesRun(env={"EXTRA_PIP_PACKAGES": "prefect dask distributed dask_cloudprovider[aws]"}, labels=["porbmv"],), 
+    executor = DaskExecutor(cluster_class="dask_cloudprovider.aws.FargateCluster", cluster_kwargs={"image": "prefecthq/prefect:latest", "n_workers": 2,},)
     ) as flow:
     incs = inc.map(x=range(100))
     decs = dec.map(x=range(100))
