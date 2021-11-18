@@ -3,7 +3,7 @@ import datetime
 import random
 from prefect.storage import GitHub
 from prefect.run_configs import KubernetesRun
-from prefect.environments import KubeCluster
+from prefect.environments import DaskKubernetesEnvironment
 from prefect.executors import DaskExecutor
 
 FLOW_NAME = "wo_dask_etl"
