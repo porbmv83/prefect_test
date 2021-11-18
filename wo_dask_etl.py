@@ -23,8 +23,7 @@ POD_SPEC = make_pod_spec(image="daskdev/dask:latest",
 
 EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
-    cluster_kwargs={"pod_template": POD_SPEC,
-                    "n_workers": 2
+    cluster_kwargs={"pod_template": POD_SPEC
     },
 )
 
