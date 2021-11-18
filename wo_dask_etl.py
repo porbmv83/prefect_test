@@ -16,9 +16,14 @@ STORAGE = GitHub(
 EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
     cluster_kwargs={
-        "n_workers": 2,
+        "pod_template": make_pod_spec(
+            image= "daskdev/dask:2021.11.0",
+            },
+            memory_limit=3G,
+        )
     },
 )
+
 
 @task
 def inc(x):
