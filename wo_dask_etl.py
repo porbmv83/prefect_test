@@ -15,7 +15,7 @@ STORAGE = GitHub(
 )
 
 POD_SPEC = make_pod_spec(
-                         image="daskdev/dask:latest",
+                         image="prefecthq/prefect:0.15.9",
                          memory_limit="2G", 
                          memory_request="2G",
                          cpu_limit=1, 
