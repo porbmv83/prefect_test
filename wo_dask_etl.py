@@ -14,7 +14,7 @@ STORAGE = GitHub(
     #access_token_secret="GITHUB_ACCESS_TOKEN",   required with private repositories
 )
 
-POD_SPEC = make_pod_spec(name="my-dask-pods-",
+POD_SPEC = make_pod_spec(
                          image="daskdev/dask:latest",
                          memory_limit="2G", 
                          memory_request="2G",
@@ -25,7 +25,9 @@ POD_SPEC = make_pod_spec(name="my-dask-pods-",
 EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
     cluster_kwargs={"pod_template": POD_SPEC,
-                    "n_workers": 2
+                    "n_workers": 2,
+                    "name": "my-dask-pod-"
+                    
     },
 )
 
