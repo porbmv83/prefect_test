@@ -5,6 +5,7 @@ from prefect.storage import GitHub
 from prefect.run_configs import KubernetesRun
 from prefect.environments import DaskKubernetesEnvironment
 from prefect.executors import DaskExecutor
+from dask_kubernetes import KubeCluster, make_pod_spec
 
 FLOW_NAME = "wo_dask_etl"
 STORAGE = GitHub(
@@ -13,13 +14,17 @@ STORAGE = GitHub(
     #access_token_secret="GITHUB_ACCESS_TOKEN",   required with private repositories
 )
 
+POD_SPEC = make_pod_spec(image="daskdev/dask:latest",
+                         memory_limit="2G", 
+                         memory_request="2G",
+                         cpu_limit=1, 
+                         cpu_request=1,
+                         env={"EXTRA_PIP_PACKAGES": "prefect fastparquet distributed"},)
+
 EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
-    cluster_kwargs={
-        "pod_template": make_pod_spec(
-            image= "daskdev/dask:2021.11.0",
-            memory_limit=None,
-        )
+    cluster_kwargs={"pod_template": POD_SPEC,
+                    "n_workers": 2
     },
 )
 
