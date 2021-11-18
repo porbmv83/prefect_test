@@ -26,7 +26,7 @@ EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
     cluster_kwargs={"pod_template": POD_SPEC,
                     "n_workers": 2,
-                    "name": "my-dask-pod-"
+                    "name": "my-dask-pod"
                     
     },
 )
