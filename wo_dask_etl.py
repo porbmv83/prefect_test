@@ -18,7 +18,7 @@ EXECUTOR = DaskExecutor(
     cluster_kwargs={
         "pod_template": make_pod_spec(
             image= "daskdev/dask:2021.11.0",
-            memory_limit=3G,
+            memory_limit=None,
         )
     },
 )
