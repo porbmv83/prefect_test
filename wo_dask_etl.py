@@ -16,7 +16,6 @@ STORAGE = GitHub(
 EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
     cluster_kwargs={
-        "image": "prefecthq/prefect:latest",
         "n_workers": 2,
     },
 )
