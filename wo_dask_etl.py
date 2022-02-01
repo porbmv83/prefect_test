@@ -26,11 +26,10 @@ POD_SPEC = make_pod_spec(
 EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
     cluster_kwargs={"pod_template": POD_SPEC,
-                    "minimum": 1, 
-                    "maximum": 2,
                     "name": "my-dask-pod"
-                    
-    },
+                    },
+    adapt_kwargs={"minimum": 1, 
+                  "maximum": 2},
 )
 
 @task
