@@ -2,6 +2,7 @@ from prefect import task, Flow
 from prefect.executors import DaskExecutor
 from prefect.run_configs import KubernetesRun
 from dask_kubernetes import KubeCluster
+from prefect.storage import GitHub
 
 FLOW_NAME = "prefect-dask-spre"
 STORAGE = GitHub(
