@@ -4,7 +4,7 @@ from prefect.run_configs import KubernetesRun
 from dask_kubernetes import KubeCluster
 from prefect.storage import GitHub
 
-FLOW_NAME = "dask-spre"
+FLOW_NAME = "dask_spre"
 STORAGE = GitHub(
     repo="porbmv83/prefect_test",
     path=f"{FLOW_NAME}.py",
