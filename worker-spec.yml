@@ -1,0 +1,50 @@
+# apiVersion: v1
+kind: Pod
+metadata:
+  # name: test-pod
+  labels:
+    app: prefect-spre
+spec:
+  volumes:
+    - name: core
+      persistentVolumeClaim:
+        claimName: sas-risk-cirrus-core-pvc
+  restartPolicy: Never
+  containers:
+    - image: sasporbmvacr.azurecr.io/prefect-dask-spre:latest
+      imagePullPolicy: IfNotPresent
+      args:
+        [
+          dask-worker,
+          $(DASK_SCHEDULER_ADDRESS),
+          --nthreads,
+          "2",
+          --memory-limit,
+          2GB,
+          --no-dashboard,
+          --death-timeout,
+          "60",
+        ]
+      name: dask-worker
+      env:
+        #- name: EXTRA_PIP_PACKAGES
+        #  value:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2G
+          requests:
+            cpu: "2"
+            memory: 1G
+      volumeMounts:
+        - name: core
+          mountPath: /core
+  imagePullSecrets:
+    - name: sasporbmvacr-image-pull-secret
+  nodeSelector:
+    workload.sas.com/class: compute
+  tolerations:
+    - effect: NoSchedule
+      key: workload.sas.com/class
+      operator: Equal
+      value: compute
