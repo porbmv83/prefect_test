@@ -4,6 +4,7 @@ from prefect.run_configs import KubernetesRun
 from dask_kubernetes import make_pod_spec
 #from dask_kubernetes import KubeCluster
 from prefect.storage import GitHub
+import saspy
 
 FLOW_NAME = "dask_spre"
 STORAGE = GitHub(
@@ -49,17 +50,51 @@ RUN_CONFIG = KubernetesRun(
 
 @task
 def inc(x):
-    return x + 1
+    sas = saspy.SASsession()
+    sas.symput('sas_x', x)
+    sas.submitLOG("""
+		data _null_;
+			sas_z = &sas_x+1;
+			call symput('sas_z', sas_z);
+		run; 
+	""")
+    z = sas.symget('sas_z')
+    sas.endsas()
+
+    return z
 
 
 @task
 def dec(x):
-    return x - 1
+    sas = saspy.SASsession()
+    sas.symput('sas_x', x)
+    sas.submitLOG("""
+		data _null_;
+			sas_z = &sas_x-1;
+			call symput('sas_z', sas_z);
+		run; 
+	""")
+    z = sas.symget('sas_z')
+    sas.endsas()
+
+    return z
 
 
 @task
 def add(x, y):
-    return x + y
+    sas = saspy.SASsession()
+    sas.symput('sas_x', x)
+    sas.symput('sas_y', y)
+    sas.submitLOG("""
+		data _null_;
+			sas_z = &sas_x-&sas_y;
+			call symput('sas_z', sas_z);
+		run; 
+	""")
+    z = sas.symget('sas_z')
+    sas.endsas()
+
+    return z
 
 
 @task
