@@ -11,13 +11,13 @@ STORAGE = GitHub(
     # access_token_secret="GITHUB_ACCESS_TOKEN",   required with private repositories
 )
 EXECUTOR = DaskExecutor(
-    cluster_class=lambda: KubeCluster("worker-spec.yml"),
+    cluster_class=lambda: KubeCluster("worker-spec.yaml"),
     adapt_kwargs={"minimum": 1, "maximum": 2},
 )
 
 RUN_CONFIG = KubernetesRun(
     env={
-        "EXTRA_PIP_PACKAGES": "prefect[github] dask distributed dask-kubernetes"},
+        "EXTRA_PIP_PACKAGES": "dask distributed dask-kubernetes"},
     labels=["porbmv"],
 )
 
