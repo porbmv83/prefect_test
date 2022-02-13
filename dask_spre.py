@@ -62,7 +62,7 @@ def inc(x):
     z = sas.symget('sas_z')
     print(r['LOG'])
     sas.endsas()
-    print('INC: SAS value is: ' + z)
+    print('INC: SAS value is: ' + str(z))
     return z
 
 
@@ -80,7 +80,7 @@ def dec(x):
     z = sas.symget('sas_z')
     print(r['LOG'])
     sas.endsas()
-    print('DEC: SAS value is: ' + z)
+    print('DEC: SAS value is: ' + str(z))
     return z
 
 
@@ -99,7 +99,7 @@ def add(x, y):
     z = sas.symget('sas_z')
     print(r['LOG'])
     sas.endsas()
-    print('DEC: SAS value is: ' + z)
+    print('DEC: SAS value is: ' + str(z))
     return z
 
 
