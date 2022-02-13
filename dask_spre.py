@@ -18,7 +18,7 @@ POD_SPEC = make_pod_spec(
     cpu_limit=1,
     memory_request="2G",
     cpu_request=1,
-    env={"EXTRA_PIP_PACKAGES": "prefect fastparquet"},
+    #    env={"EXTRA_PIP_PACKAGES": ""},
     extra_container_config={"volumeMounts": [{"name": "core",
                                              "mountPath": "/core"}]},
     extra_pod_config={"volumes": [{"name": "core",
@@ -41,8 +41,10 @@ EXECUTOR = DaskExecutor(
 )
 
 RUN_CONFIG = KubernetesRun(
-    env={
-        "EXTRA_PIP_PACKAGES": "dask distributed dask-kubernetes"},
+    image="sasporbmvacr.azurecr.io/prefect-dask-spre:latest",
+    image_pull_secrets={"name": "sasporbmvacr-image-pull-secret"},
+    #   env={"EXTRA_PIP_PACKAGES": "dask distributed dask-kubernetes"},
+    image_pull_policy="Always",
     labels=["porbmv"],
 )
 
