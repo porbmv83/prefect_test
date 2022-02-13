@@ -70,7 +70,7 @@ def inc(x):
 def dec(x):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
-    sas.submit("""
+    r = sas.submit("""
 		%put DEC: Python value is: &sas_x;
 		data _null_;
 			sas_z = &sas_x-1;
@@ -89,7 +89,7 @@ def add(x, y):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
     sas.symput('sas_y', y)
-    sas.submit("""
+    r = sas.submit("""
 		%put ADD: Python value is: &sas_x and &sas_y;
 		data _null_;
 			sas_z = &sas_x-&sas_y;
