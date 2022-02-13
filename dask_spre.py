@@ -48,7 +48,7 @@ RUN_CONFIG = KubernetesRun(
 )
 
 
-@task
+@task(log_stdout=True)
 def inc(x):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
@@ -66,7 +66,7 @@ def inc(x):
     return z
 
 
-@task
+@task(log_stdout=True)
 def dec(x):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
@@ -84,7 +84,7 @@ def dec(x):
     return z
 
 
-@task
+@task(log_stdout=True)
 def add(x, y):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
@@ -103,7 +103,7 @@ def add(x, y):
     return z
 
 
-@task
+@task(log_stdout=True)
 def list_sum(arr):
     return sum(arr)
 
