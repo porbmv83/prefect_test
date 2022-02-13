@@ -87,6 +87,7 @@ worker_spec = {
 
 EXECUTOR = DaskExecutor(
     cluster_class=lambda: KubeCluster(worker_spec),
+    cluster_kwargs={"name": "dask-spre"},
     adapt_kwargs={"minimum": 1, "maximum": 2},
 )
 
