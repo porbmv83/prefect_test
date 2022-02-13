@@ -37,14 +37,12 @@ EXECUTOR = DaskExecutor(
     cluster_kwargs={"pod_template": POD_SPEC,
                     "name": "dask-spre"
                     },
-    adapt_kwargs={"minimum": 1, "maximum": 2},
+    adapt_kwargs={"minimum": 0, "maximum": 4},
 )
 
 RUN_CONFIG = KubernetesRun(
-    image="sasporbmvacr.azurecr.io/prefect-dask-spre:latest",
-    image_pull_secrets={"name": "sasporbmvacr-image-pull-secret"},
+    image="prefecthq/prefect:sha-8072796-python3.8",
     #   env={"EXTRA_PIP_PACKAGES": "dask distributed dask-kubernetes"},
-    image_pull_policy="Always",
     labels=["porbmv"],
 )
 
