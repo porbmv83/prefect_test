@@ -39,6 +39,7 @@ EXECUTOR = DaskExecutor(
                     "name": "dask-spre"
                     },
     adapt_kwargs={"minimum": 0, "maximum": 4},
+    work_stealing=True,
 )
 
 RUN_CONFIG = KubernetesRun(
@@ -52,15 +53,17 @@ RUN_CONFIG = KubernetesRun(
 def inc(x):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
-    sas.submitLOG("""
+    r = sas.submit("""
+		%put INC: Python value is: &sas_x;
 		data _null_;
 			sas_z = &sas_x+1;
 			call symput('sas_z', sas_z);
 		run; 
 	""")
     z = sas.symget('sas_z')
+    print(r['LOG'])
     sas.endsas()
-
+    print('INC: SAS value is: ' + z)
     return z
 
 
@@ -68,15 +71,17 @@ def inc(x):
 def dec(x):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
-    sas.submitLOG("""
+    sas.submit("""
+		%put DEC: Python value is: &sas_x;
 		data _null_;
 			sas_z = &sas_x-1;
 			call symput('sas_z', sas_z);
 		run; 
 	""")
     z = sas.symget('sas_z')
+    print(r['LOG'])
     sas.endsas()
-
+    print('DEC: SAS value is: ' + z)
     return z
 
 
@@ -85,15 +90,17 @@ def add(x, y):
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
     sas.symput('sas_y', y)
-    sas.submitLOG("""
+    sas.submit("""
+		%put ADD: Python value is: &sas_x and &sas_y;
 		data _null_;
 			sas_z = &sas_x-&sas_y;
 			call symput('sas_z', sas_z);
 		run; 
 	""")
     z = sas.symget('sas_z')
+    print(r['LOG'])
     sas.endsas()
-
+    print('DEC: SAS value is: ' + z)
     return z
 
 
