@@ -18,7 +18,7 @@ POD_SPEC = make_pod_spec(
     cpu_limit=1,
     memory_request="2G",
     cpu_request=1,
-    env={"EXTRA_PIP_PACKAGES": "dask distributed"},
+    env={"EXTRA_PIP_PACKAGES": "prefect fastparquet"},
     extra_container_config={"volumeMounts": [{"name": "core",
                                              "mountPath": "/core"}]},
     extra_pod_config={"volumes": [{"name": "core",
