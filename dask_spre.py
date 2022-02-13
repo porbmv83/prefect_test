@@ -41,8 +41,7 @@ EXECUTOR = DaskExecutor(
 )
 
 RUN_CONFIG = KubernetesRun(
-    image="prefecthq/prefect:sha-8072796-python3.8",
-    #   env={"EXTRA_PIP_PACKAGES": "dask distributed dask-kubernetes"},
+    env={"EXTRA_PIP_PACKAGES": "dask distributed dask-kubernetes"},
     labels=["porbmv"],
 )
 
