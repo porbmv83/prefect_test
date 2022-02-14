@@ -19,13 +19,13 @@ POD_SPEC = make_pod_spec(
     cpu_limit=2,
     memory_request="2G",
     cpu_request=2,
-    #    env={"EXTRA_PIP_PACKAGES": ""},
+    env={"EXTRA_PIP_PACKAGES": "bokeh"},
     extra_container_config={"volumeMounts": [{"name": "core",
                                              "mountPath": "/core"}]},
     extra_pod_config={"volumes": [{"name": "core",
                                    "persistentVolumeClaim": {"claimName": "sas-risk-cirrus-core-pvc"}}],
                       "imagePullSecrets": [{"name": "sasporbmvacr-image-pull-secret"}],
-                      "nodeSelector": {"workload.sas.com/class": "compute"},
+                      # "nodeSelector": {"workload.sas.com/class": "compute"},
                       "tolerations": [{"effect": "NoSchedule",
                                        "key": "workload.sas.com/class",
                                        "operator": "Equal",
@@ -112,7 +112,7 @@ with Flow(FLOW_NAME,
           storage=STORAGE,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
-    incs = inc.map(x=range(10))
-    decs = dec.map(x=range(10))
+    incs = inc.map(x=range(100))
+    decs = dec.map(x=range(100))
     adds = add.map(x=incs, y=decs)
     total = list_sum(adds)
