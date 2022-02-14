@@ -26,10 +26,10 @@ POD_SPEC = make_pod_spec(
                                    "persistentVolumeClaim": {"claimName": "sas-risk-cirrus-core-pvc"}}],
                       "imagePullSecrets": [{"name": "sasporbmvacr-image-pull-secret"}],
                       # "nodeSelector": {"workload.sas.com/class": "compute"},
-                      "tolerations": [{"effect": "NoSchedule",
-                                       "key": "workload.sas.com/class",
-                                       "operator": "Equal",
-                                       "value": "compute"}]
+                      # "tolerations": [{"effect": "NoSchedule",
+                      #                 "key": "workload.sas.com/class",
+                      #                 "operator": "Equal",
+                      #                 "value": "compute"}]
                       },
 )
 
