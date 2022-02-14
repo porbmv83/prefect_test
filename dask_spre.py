@@ -38,7 +38,7 @@ EXECUTOR = DaskExecutor(
     cluster_kwargs={"pod_template": POD_SPEC,
                     "name": "dask-spre",
                     },
-    adapt_kwargs={"minimum": 1, "maximum": 4,  "work_stealing": "True"},
+    adapt_kwargs={"minimum": 1, "maximum": 3,  "work_stealing": "True"},
 )
 
 RUN_CONFIG = KubernetesRun(
