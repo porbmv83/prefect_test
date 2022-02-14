@@ -25,7 +25,6 @@ POD_SPEC = make_pod_spec(
     extra_pod_config={"volumes": [{"name": "core",
                                    "persistentVolumeClaim": {"claimName": "sas-risk-cirrus-core-pvc"}}],
                       "imagePullSecrets": [{"name": "sasporbmvacr-image-pull-secret"}],
-                      # "nodeSelector": {"workload.sas.com/class": "compute"},
                       # "tolerations": [{"effect": "NoSchedule",
                       #                 "key": "workload.sas.com/class",
                       #                 "operator": "Equal",
@@ -38,7 +37,7 @@ EXECUTOR = DaskExecutor(
     cluster_kwargs={"pod_template": POD_SPEC,
                     "name": "dask-spre",
                     },
-    adapt_kwargs={"minimum": 1, "maximum": 3,  "work_stealing": "True"},
+    adapt_kwargs={"minimum": 1, "maximum": 2,  "work_stealing": "True"},
 )
 
 RUN_CONFIG = KubernetesRun(

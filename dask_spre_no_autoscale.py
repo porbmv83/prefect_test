@@ -1,7 +1,7 @@
 from prefect import task, Flow
 from prefect.executors import DaskExecutor
 from prefect.run_configs import KubernetesRun
-from dask_kubernetes import make_pod_spec
+#from dask_kubernetes import make_pod_spec
 #from dask_kubernetes import KubeCluster
 from prefect.storage import GitHub
 import saspy
