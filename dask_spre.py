@@ -41,8 +41,9 @@ EXECUTOR = DaskExecutor(
 )
 
 RUN_CONFIG = KubernetesRun(
-    image="prefecthq/prefect:latest-python3.8",
-    env={"EXTRA_PIP_PACKAGES": "dask-kubernetes saspy"},
+    image="sasporbmvacr.azurecr.io/prefect-dask-spre:latest",
+    env={"EXTRA_PIP_PACKAGES": "prefect[github]"},
+    image_pull_secrets=["sasporbmvacr-image-pull-secret"],
     labels=["porbmv"],
 )
 
