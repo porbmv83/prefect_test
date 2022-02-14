@@ -35,9 +35,9 @@ POD_SPEC = make_pod_spec(
 EXECUTOR = DaskExecutor(
     cluster_class="dask_kubernetes.KubeCluster",
     cluster_kwargs={"pod_template": POD_SPEC,
-                    "name": "dask-spre",
+                    "name": "dask-worker-spre-",
                     },
-    adapt_kwargs={"minimum": 1, "maximum": 2,  "work_stealing": "True"},
+    adapt_kwargs={"minimum": 1, "maximum": 2, },
 )
 
 RUN_CONFIG = KubernetesRun(
