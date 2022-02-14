@@ -1,6 +1,7 @@
 from prefect import task, Flow
 from prefect.storage import GitHub
 from prefect.run_configs import KubernetesRun
+import saspy
 
 FLOW_NAME = "no_dask_spre"
 STORAGE = GitHub(
