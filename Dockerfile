@@ -19,3 +19,7 @@ RUN alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.8 1
 RUN alternatives --set python3 /usr/local/bin/python3.8
 RUN alternatives --auto python3
 RUN python3.8 -m pip install prefect dask distributed pandas mumpy saspy dask-kubernetes
+RUN ln -s /usr/local/python3 python
+WORKDIR /
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["tini", "-g", "--", "entrypoint.sh"]

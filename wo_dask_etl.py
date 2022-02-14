@@ -17,7 +17,7 @@ POD_SPEC = make_pod_spec(
     memory_request="2G",
     cpu_limit=1,
     cpu_request=1,
-    env={"EXTRA_PIP_PACKAGES": "prefect fastparquet distributed",
+    env={"EXTRA_PIP_PACKAGES": "distributed",
          "TZ": "Europe/Amsterdam"},)
 
 EXECUTOR = DaskExecutor(
@@ -31,7 +31,7 @@ EXECUTOR = DaskExecutor(
 
 RUN_CONFIG = KubernetesRun(
     env={
-        "EXTRA_PIP_PACKAGES": "prefect dask distributed dask-kubernetes"},
+        "EXTRA_PIP_PACKAGES": "dask-kubernetes"},
     labels=["porbmv"],
 )
 

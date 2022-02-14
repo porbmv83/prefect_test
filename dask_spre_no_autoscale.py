@@ -6,39 +6,15 @@ from dask_kubernetes import make_pod_spec
 from prefect.storage import GitHub
 import saspy
 
-FLOW_NAME = "dask_spre"
+FLOW_NAME = "dask_spre_no_autoscale"
 STORAGE = GitHub(
     repo="porbmv83/prefect_test",
     path=f"{FLOW_NAME}.py",
     # access_token_secret="GITHUB_ACCESS_TOKEN",   required with private repositories
 )
 
-POD_SPEC = make_pod_spec(
-    image="sasporbmvacr.azurecr.io/prefect-dask-spre:latest",
-    memory_limit="2G",
-    cpu_limit=2,
-    memory_request="2G",
-    cpu_request=2,
-    #    env={"EXTRA_PIP_PACKAGES": ""},
-    extra_container_config={"volumeMounts": [{"name": "core",
-                                             "mountPath": "/core"}]},
-    extra_pod_config={"volumes": [{"name": "core",
-                                   "persistentVolumeClaim": {"claimName": "sas-risk-cirrus-core-pvc"}}],
-                      "imagePullSecrets": [{"name": "sasporbmvacr-image-pull-secret"}],
-                      "nodeSelector": {"workload.sas.com/class": "compute"},
-                      "tolerations": [{"effect": "NoSchedule",
-                                       "key": "workload.sas.com/class",
-                                       "operator": "Equal",
-                                       "value": "compute"}]
-                      },
-)
-
 EXECUTOR = DaskExecutor(
-    cluster_class="dask_kubernetes.KubeCluster",
-    cluster_kwargs={"pod_template": POD_SPEC,
-                    "name": "dask-spre",
-                    },
-    adapt_kwargs={"minimum": 1, "maximum": 4,  "work_stealing": "True"},
+    address="dask-scheduler:8786",
 )
 
 RUN_CONFIG = KubernetesRun(
@@ -112,7 +88,7 @@ with Flow(FLOW_NAME,
           storage=STORAGE,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
-    incs = inc.map(x=range(10))
-    decs = dec.map(x=range(10))
+    incs = inc.map(x=range(100))
+    decs = dec.map(x=range(100))
     adds = add.map(x=incs, y=decs)
     total = list_sum(adds)
