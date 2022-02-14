@@ -10,7 +10,7 @@ STORAGE = GitHub(
 )
 
 RUN_CONFIG = KubernetesRun(
-    image="prefecthq/prefect:latest-python3.8",
+    image="sasporbmvacr.azurecr.io/prefect-dask-spre:latest",
     env={"EXTRA_PIP_PACKAGES": "dask-kubernetes saspy"},
     labels=["porbmv"],
 )
