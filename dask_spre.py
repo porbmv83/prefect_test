@@ -15,10 +15,10 @@ STORAGE = GitHub(
 
 POD_SPEC = make_pod_spec(
     image="sasporbmvacr.azurecr.io/prefect-dask-spre:latest",
-    memory_limit="4G",
-    cpu_limit=4,
-    memory_request="4G",
-    cpu_request=4,
+    memory_limit="3G",
+    cpu_limit=1,
+    memory_request="3G",
+    cpu_request=1,
     env={"EXTRA_PIP_PACKAGES": "bokeh"},
     extra_container_config={"volumeMounts": [{"name": "core",
                                              "mountPath": "/core"}]},
@@ -28,7 +28,8 @@ POD_SPEC = make_pod_spec(
                       # "tolerations": [{"effect": "NoSchedule",
                       #                 "key": "workload.sas.com/class",
                       #                 "operator": "Equal",
-                      #                 "value": "compute"}]
+                      #                 "value": "compute"
+                      # }]
                       },
 )
 
@@ -38,7 +39,7 @@ EXECUTOR = DaskExecutor(
                     "name": "spre-dask-worker",
                     #  "n_workers": 3
                     },
-    adapt_kwargs={"minimum": 1, "maximum": 10, },
+    adapt_kwargs={"minimum": 1, "maximum": 3, },
 )
 
 RUN_CONFIG = KubernetesRun(
