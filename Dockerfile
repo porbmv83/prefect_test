@@ -15,11 +15,11 @@ RUN yum install which -y
 WORKDIR /tmp                                               
 RUN rm -r Python-3.8.12.tgz
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+WORKDIR /
 RUN alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.8 1
 RUN alternatives --set python3 /usr/local/bin/python3.8
 RUN alternatives --auto python3
-RUN python3.8 -m pip install prefect dask distributed pandas mumpy saspy dask-kubernetes
+RUN python3.8 -m pip install prefect[github] dask distributed pandas mumpy saspy dask-kubernetes bokeh
 RUN ln -s /usr/local/python3 python
-WORKDIR /
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["tini", "-g", "--", "entrypoint.sh"]
