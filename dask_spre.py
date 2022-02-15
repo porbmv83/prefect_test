@@ -38,7 +38,7 @@ EXECUTOR = DaskExecutor(
                     "name": "spre-dask-worker",
                     #  "n_workers": 3
                     },
-    adapt_kwargs={"minimum": 1, "maximum": 2, },
+    adapt_kwargs={"minimum": 1, "maximum": 10, },
 )
 
 RUN_CONFIG = KubernetesRun(
