@@ -15,10 +15,10 @@ STORAGE = GitHub(
 
 POD_SPEC = make_pod_spec(
     image="sasporbmvacr.azurecr.io/prefect-dask-spre:latest",
-    # memory_limit="2G",
-    # cpu_limit=2,
-    # memory_request="2G",
-    # cpu_request=2,
+    memory_limit="4G",
+    cpu_limit=4,
+    memory_request="4G",
+    cpu_request=4,
     env={"EXTRA_PIP_PACKAGES": "bokeh"},
     extra_container_config={"volumeMounts": [{"name": "core",
                                              "mountPath": "/core"}]},
