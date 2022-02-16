@@ -66,7 +66,10 @@ def processParameters(**args):
 # Instantiate the flow and the task
 initialize = RunSpreTask(name='Initialize')
 
-with Flow("prefect-spre-dataPrep") as flow:
+with Flow(FLOW_NAME,
+          storage=STORAGE,
+          run_config=RUN_CONFIG,
+          executor=EXECUTOR,) as flow:
 
     # Global parameters
     BASE_DT = Parameter('BASE_DT', default='12312019')
