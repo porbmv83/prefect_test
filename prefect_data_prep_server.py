@@ -40,7 +40,7 @@ class RunSpreTask(Task):
         sas.symput('OUTPUT_PARAMETERS', args)
         r = sas.submit('''
 			%put : INPUT_PARAMETERS: &INPUT_PARAMETERS;
-			%include "&FA_PATH\prefect\source\core_run_sas.sas"; 
+			%include "&FA_PATH/prefect/source/core_run_sas.sas"; 
 		''')
         print(r['LOG'])
         log_name = dict_node_code['VALUE'] + "_" + \
