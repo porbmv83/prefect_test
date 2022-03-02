@@ -1,4 +1,5 @@
 from prefect import Flow, Task, Parameter
+from prefect.tasks.control_flow import case
 from prefect.engine import signals
 import saspy
 import os
@@ -8,6 +9,7 @@ import prefect
 
 class RunSpreTask(Task):
     def run(self, **params):
+        print(params)
         # Get the values from the global parameters
         FA_PATH = prefect.context.parameters['FA_PATH']
         RUN_INSTANCE = prefect.context.parameters['RUN_INSTANCE']
@@ -50,7 +52,7 @@ class RunSpreTask(Task):
             RUN_INSTANCE+'\\logs', log_name), "w")
         log_file.write(r['LOG'])
         log_file.close()
-
+        print('Check SAS Logs: ' + RUN_INSTANCE + '\\logs\\'+log_name)
         # Close the SAS session
         sas.endsas()
 
@@ -64,6 +66,16 @@ class RunSpreTask(Task):
         print("The number of partitions is: " + str(N_PARTITIONS))
         # Return the number of the partitions in case this variable was created in SAS
         return [i for i in range(N_PARTITIONS)]
+
+
+class PartitionCardinalityTask(Task):
+    def run(self, n_partitions):
+        run_partitions_flg = 0
+        if len(n_partitions) > 1:
+            run_partitions_flg = 1
+        print(n_partitions)
+        print(run_partitions_flg)
+        return run_partitions_flg
 
 
 # Global parameters
@@ -122,68 +134,116 @@ flow.set_dependencies(task=prepare_enrichment,
                       )
                       )
 
-enrichment_stage_1 = RunSpreTask(name='Enrichment Stage1', log_stdout=True)
-flow.set_dependencies(task=enrichment_stage_1,
-                      upstream_tasks=[prepare_enrichment, filter_by_entity
-                                      ],
-                      keyword_tasks=dict(
-                          NODE_CODE='core_node_set_cardinality_byn.sas',
-                          ENRICHMENT_CONFIG='core_stg.enrichment_config_stage1',
-                          STAGE=1,
-                          ENRICHMENT_CARDINALITY='core_stg.enrichment_cardinality_1',
-                      )
-                      )
+# enrichment_stage_1 = RunSpreTask(name='Enrichment Stage1', log_stdout=True)
+# flow.set_dependencies(task=enrichment_stage_1,
+#                       upstream_tasks=[prepare_enrichment, filter_by_entity
+#                                       ],
+#                       keyword_tasks=dict(
+#                           NODE_CODE='core_node_set_cardinality_byn.sas',
+#                           ENRICHMENT_CONFIG='core_stg.enrichment_config_stage1',
+#                           STAGE=1,
+#                           ENRICHMENT_CARDINALITY='core_stg.enrichment_cardinality_1',
+#                       )
+#                       )
 
 
-map_run_partition_stage1 = RunSpreTask(
-    name='Run Partition Stage 1', log_stdout=True)
-flow.set_dependencies(task=map_run_partition_stage1,
-                      upstream_tasks=[enrichment_stage_1],
-                      keyword_tasks=dict(
-                          RUN=enrichment_stage_1,
-                      ),
-                      mapped=True,
-                      )
-flow.set_dependencies(task=map_run_partition_stage1,
-                      upstream_tasks=[enrichment_stage_1],
-                      keyword_tasks=dict(
-                          STAGE=1,
-                          NODE_CODE='core_node_run_task.sas',
-                          ENRICHMENT_CONFIG='core_stg.enrichment_config_stage_1',
-                          RUN_TYPE="CODE",
-                          ENRICHMENT_CARDINALITY='core_stg.enrichment_cardinality_1',
-                          PARTITION_INPUT='core_stg.enrichment_config_stage_1_part&MAP_INDEX.',
-                          RESULT_LIST_OUT='core_stg.result_list_1_&MAP_INDEX.',
-                          RUN_RESULT_OUT='core_stg.result_1_&MAP_INDEX.',
-                      )
-                      )
-# max_stages = 3
-# loop_stages = dict()
-# map_runs = dict()
-# for i in range(1, max_stages+1):
-#     loop_stages['enrichment_stage' +
-#               str(i)] = RunSpreTask(name='Enrichment Stage '+str(i), log_stdout=True)
-#     map_runs['map_run_partition_stage' +
-#               str(i)] = RunSpreTask(name='Run Partition Stage '+str(i), log_stdout=True)
-# print(loop_vars)
-# previous_key = NULL
-# for index, (key, value) in enumerate(loop_vars.items()):
-#     key = value
-#     if previous_key == NULL:
-#         list_upstream_tasks = [prepare_enrichment, filter_by_entity]
-#     else:
-#         list_upstream_tasks = [previous_key]
-#     flow.set_dependencies(task=key,
-#                           upstream_tasks=list_upstream_tasks,
-#                           keyword_tasks=dict(
-#                               NODE_CODE='core_node_set_cardinality_byn.sas',
-#                               ENRICHMENT_CONFIG='core_stg.enrichment_config_stage' +
-#                               str(index+1),
-#                               STAGE=index+1,
-#                               ENRICHMENT_CARDINALITY='core_stg.enrichment_cardinality' +
-#                               str(index+1),
-#                           )
-#                           )
+# map_run_partition_stage1 = RunSpreTask(
+#     name='Run Partition Stage 1', log_stdout=True)
+# flow.set_dependencies(task=map_run_partition_stage1,
+#                       upstream_tasks=[enrichment_stage_1],
+#                       keyword_tasks=dict(
+#                           RUN=enrichment_stage_1,
+#                       ),
+#                       mapped=True,
+#                       )
+# flow.set_dependencies(task=map_run_partition_stage1,
+#                       upstream_tasks=[enrichment_stage_1],
+#                       keyword_tasks=dict(
+#                           STAGE=1,
+#                           NODE_CODE='core_node_run_task.sas',
+#                           ENRICHMENT_CONFIG='core_stg.enrichment_config_stage_1',
+#                           RUN_TYPE='CODE',
+#                           FUNCTIONAL_CCY='USD',
+#                           ENRICH_COUNTERPARTY_FLG='N',
+#                           ENRICHMENT_CARDINALITY='core_stg.enrichment_cardinality_1',
+#                           PARTITION_INPUT='core_stg.enrichment_config_stage1_part&MAP_INDEX.',
+#                           RESULT_LIST_OUT='core_stg.result_list_1_&MAP_INDEX.',
+#                           RUN_RESULT_OUT='core_stg.result_1_&MAP_INDEX.',
+#                       )
+#                       )
+max_stages = 2
+stages = dict()
+for i in range(1, max_stages+1):
+    task = dict()
+    task['enrichment_stage_auto_' +
+         str(i)] = RunSpreTask(name='Enrichment Stage Auto '+str(i), log_stdout=True)
+    task['partition_cardinality_' + str(i)] = PartitionCardinalityTask(
+        name='Check Partition Cardinality Stage '+str(i), log_stdout=True)
+    task['map_run_partition_auto_stage_' +
+         str(i)] = RunSpreTask(name='Run Partition Auto Stage '+str(i), log_stdout=True)
+    stages['stage' + str(i)] = task
+
+previous_key = None
+for stage_index, (stage_key, stage_value) in enumerate(stages.items()):
+
+    task_list = list(stage_value.keys())
+    enrichment_stage_auto_n = stage_value[task_list[0]]
+    partition_cardinality_n = stage_value[task_list[1]]
+    map_run_partition_auto_stage_n = stage_value[task_list[2]]
+
+    if previous_key is None:
+        list_upstream_tasks = [prepare_enrichment, filter_by_entity]
+    else:
+        list_upstream_tasks = [previous_key]
+
+    flow.set_dependencies(task=enrichment_stage_auto_n,
+                          upstream_tasks=list_upstream_tasks,
+                          keyword_tasks=dict(
+                              NODE_CODE='core_node_set_cardinality_byn.sas',
+                              ENRICHMENT_CONFIG='core_stg.enrichment_config_stage' +
+                              str(stage_index+1),
+                              STAGE=stage_index+1,
+                              ENRICHMENT_CARDINALITY='core_stg.enrichment_cardinality_' +
+                              str(stage_index+1),
+                          )
+                          )
+
+    flow.set_dependencies(task=partition_cardinality_n,
+                          upstream_tasks=[enrichment_stage_auto_n],
+                          keyword_tasks=dict(n_partitions=enrichment_stage_auto_n
+                                             )
+                          )
+
+    with case(partition_cardinality_n, 1):
+        flow.set_dependencies(task=map_run_partition_auto_stage_n,
+                              upstream_tasks=[enrichment_stage_auto_n],
+                              keyword_tasks=dict(
+                                  RUN=enrichment_stage_auto_n,
+                              ),
+                              mapped=True,
+                              )
+        flow.set_dependencies(task=map_run_partition_auto_stage_n,
+                              upstream_tasks=[partition_cardinality_n],
+                              keyword_tasks=dict(
+                                  STAGE=stage_index+1,
+                                  NODE_CODE='core_node_run_task.sas',
+                                  ENRICHMENT_CONFIG='core_stg.enrichment_config_stage_' +
+                                  str(stage_index+1),
+                                  RUN_TYPE='CODE',
+                                  FUNCTIONAL_CCY='USD',
+                                  ENRICH_COUNTERPARTY_FLG='N',
+                                  ENRICHMENT_CARDINALITY='core_stg.enrichment_cardinality_' +
+                                  str(stage_index+1),
+                                  PARTITION_INPUT='core_stg.enrichment_config_stage' +
+                                  str(stage_index+1)+'_part&MAP_INDEX.',
+                                  RESULT_LIST_OUT='core_stg.result_list_' +
+                                  str(stage_index+1)+'_&MAP_INDEX.',
+                                  RUN_RESULT_OUT='core_stg.result_' +
+                                  str(stage_index+1)+'_&MAP_INDEX.',
+                              )
+                              )
+
+    previous_key = map_run_partition_auto_stage_n
 
 
 flow.visualize()
