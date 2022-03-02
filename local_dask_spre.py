@@ -28,6 +28,7 @@ RUN_CONFIG = KubernetesRun(
 
 @task(log_stdout=True)
 def inc(x):
+    print("Python value for inc: "+str(x))
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
     r = sas.submit("""
@@ -46,6 +47,7 @@ def inc(x):
 
 @task(log_stdout=True)
 def dec(x):
+    print("Python value for dec: "+str(x))
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
     r = sas.submit("""
@@ -64,6 +66,7 @@ def dec(x):
 
 @task(log_stdout=True)
 def add(x, y):
+    print("Python value for add: "+str(x)+str(y))
     sas = saspy.SASsession()
     sas.symput('sas_x', x)
     sas.symput('sas_y', y)
@@ -90,7 +93,7 @@ with Flow(FLOW_NAME,
           storage=STORAGE,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
-    incs = inc.map(x=range(1))
-    decs = dec.map(x=range(1))
+    incs = inc.map(x=range(2))
+    decs = dec.map(x=range(2))
     adds = add.map(x=incs, y=decs)
     total = list_sum(adds)
