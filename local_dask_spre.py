@@ -6,7 +6,7 @@ from prefect.run_configs import KubernetesRun
 from prefect.storage import GitHub
 import saspy
 
-FLOW_NAME = "dask_spre_no_autoscale"
+FLOW_NAME = "local_dask_spre"
 STORAGE = GitHub(
     repo="porbmv83/prefect_test",
     path=f"{FLOW_NAME}.py",
