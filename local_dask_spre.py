@@ -93,7 +93,7 @@ with Flow(FLOW_NAME,
           storage=STORAGE,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
-    incs = inc.map(x=range(2))
-    decs = dec.map(x=range(2))
+    incs = inc.map(x=range(5))
+    decs = dec.map(x=range(5))
     adds = add.map(x=incs, y=decs)
     total = list_sum(adds)
