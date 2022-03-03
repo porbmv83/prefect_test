@@ -77,7 +77,7 @@ def runSASCode(code, server, session_id, authheader):
 
 
 @task(log_stdout=True)
-def inc(x, session_id):
+def inc(x):
 
     print("Python value for inc: "+str(x))
 
@@ -138,6 +138,7 @@ with Flow(FLOW_NAME,
     authheader = ''
     session_id, authheader = connectToComputeServer()
 
-    code = inc.map(x=range(10), session_id=session_id)
-    sums = runSASCode.map(code=flatten(code), server=server, session_id=session_id, authheader=authheader)
+    code = inc.map(x=range(10))
+    print(code)
+#    sums = runSASCode.map(code=flatten(code), server=server, session_id=session_id, authheader=authheader)
 
