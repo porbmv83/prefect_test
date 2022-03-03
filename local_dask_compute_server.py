@@ -87,7 +87,7 @@ def inc(x, session_id):
 			    call symput('sas_z', sas_z);
 		    run; 
 	        """)
-    runSASCode.run(code)
+    return code
 
 
 
@@ -140,5 +140,6 @@ with Flow(FLOW_NAME,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
     session_id = connectToComputeServer()
-    incs = inc.map(x=range(2), session_id=session_id)
+    code = inc.map(x=range(2), session_id=session_id)
+    runSASCode.map(code)
 
