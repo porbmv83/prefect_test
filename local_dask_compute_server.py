@@ -50,7 +50,7 @@ def connectToComputeServer():
     return session_id, authheader
 
 @task(log_stdout=True)
-def runSASCode(code, server, session_id, autheader):
+def runSASCode(code, server, session_id, authheader):
     data = "{\"code\" : \"" + code + "\""
     url = server + '/compute/sessions/' + session_id + '/jobs'
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
