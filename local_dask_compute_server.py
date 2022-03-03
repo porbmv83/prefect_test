@@ -7,9 +7,7 @@ from prefect.storage import GitHub
 import requests
 import time
 
-server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
-authheader =''
-session_id =''
+
 
 FLOW_NAME = "local_dask_compute_server"
 STORAGE = GitHub(
@@ -52,7 +50,7 @@ def connectToComputeServer():
     return session_id
 
 @task(log_stdout=True)
-def runSASCode(code):
+def runSASCode(code, server, session_id):
     data = "{\"code\" : \"" + code + "\""
     url = server + '/compute/sessions/' + session_id + '/jobs'
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
@@ -139,7 +137,9 @@ with Flow(FLOW_NAME,
           storage=STORAGE,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
+    server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
+    authheader = ''
     session_id = connectToComputeServer()
     code = inc(x=1, session_id=session_id)
-    runSASCode(code)
+    runSASCode(code, server, session_id)
 
