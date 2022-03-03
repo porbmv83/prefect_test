@@ -17,8 +17,7 @@ STORAGE = GitHub(
 )
 
 EXECUTOR = LocalDaskExecutor(
-    scheduler="threads",
-    num_workers=4,
+    scheduler="processes"
 )
 
 RUN_CONFIG = KubernetesRun(
@@ -116,7 +115,7 @@ with Flow(FLOW_NAME,
     authheader = ''
     session_id, authheader = connectToComputeServer()
 
-    iterations = 5
+    iterations = 10
     servlist = [server] * iterations
     sessionlist = [session_id] * iterations
     authlist = [authheader] * iterations
