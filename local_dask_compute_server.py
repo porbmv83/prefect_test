@@ -161,6 +161,8 @@ with Flow(FLOW_NAME,
     server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
     authheader = ''
     session_id, authheader = connectToComputeServer()
-
-    inc = inc.map(x=range(10), server=server, session_id=session_id, authheader=authheader)
+    servlist = [server]*10
+    sessionlist = [session_id] * 10
+    authlist = [authheader] * 10
+    inc = inc.map(x=range(10), server=servlist, session_id=sessionlist, authheader=authlist)
 
