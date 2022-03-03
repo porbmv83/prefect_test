@@ -47,10 +47,10 @@ def connectToComputeServer():
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
     session_id = resp.json().get('id')
     print("Got a compute server session:" + session_id)
-    return session_id
+    return session_id, authheader
 
 @task(log_stdout=True)
-def runSASCode(code, server, session_id):
+def runSASCode(code, server, session_id, autheader):
     data = "{\"code\" : \"" + code + "\""
     url = server + '/compute/sessions/' + session_id + '/jobs'
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
@@ -139,7 +139,7 @@ with Flow(FLOW_NAME,
           executor=EXECUTOR,) as flow:
     server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
     authheader = ''
-    session_id = connectToComputeServer()
+    session_id, authheader = connectToComputeServer()
     code = inc(x=1, session_id=session_id)
-    runSASCode(code, server, session_id)
+    runSASCode(code, server, session_id, authheader)
 
