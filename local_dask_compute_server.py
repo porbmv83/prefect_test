@@ -51,7 +51,7 @@ def connectToComputeServer():
 
 @task(log_stdout=True)
 def runSASCode(code, server, session_id, authheader):
-    print("Code coming in:" + code)
+#    Since work is shared by all the code we have to write to unique datasets (expecting a string - datasetName:code to run)
     split = code.split(':')
     code = split[1]
     data = "{\"code\" : \"" + code + "\"}"
@@ -69,7 +69,7 @@ def runSASCode(code, server, session_id, authheader):
         print('The state is:' + state)
 
 
-    # Get the results for the job
+    # Read the result dataset value that is in work
     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/" + split[0] + "/rows"
 
 
