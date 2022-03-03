@@ -52,6 +52,8 @@ def connectToComputeServer():
 @task(log_stdout=True)
 def runSASCode(code, server, session_id, authheader):
     print("Code coming in:" + code)
+    split = code.split(':')
+    code = split[1]
     data = "{\"code\" : \"" + code + "\"}"
     url = server + '/compute/sessions/' + session_id + '/jobs'
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
@@ -68,7 +70,8 @@ def runSASCode(code, server, session_id, authheader):
 
 
     # Get the results for the job
-    url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/RESULT/rows"
+    url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/" + split[0] + "/rows"
+
 
     resp = requests.get(url=url, headers=authheader, verify=False)
     val = resp.json().get('items')[0].get('cells')[0]
@@ -77,21 +80,25 @@ def runSASCode(code, server, session_id, authheader):
 
 @task(log_stdout=True)
 def inc(x):
-    code = "%let sas_x = " + str(x) + ";data result;sas_z = &sas_x+1;put 'result=' sas_z;run;"
-    return code
+    dsName = "INC" + str(x)
+
+    code = "%let sas_x = " + str(x) + ";data " + dsName + ";sas_z = &sas_x+1;put 'result=' sas_z;run;"
+    return dsName + ":" + code
 
 
 
 @task(log_stdout=True)
 def dec(x):
-    code= "%let sas_x = " + str(x) + ";data result;sas_z = &sas_x-1;put 'result=' sas_z;run;"
-    return code
+    dsName = "DEC" + str(x)
+    code= "%let sas_x = " + str(x) + ";data " + dsName + ";sas_z = &sas_x-1;put 'result=' sas_z;run;"
+    return dsName + ":" + code
 
 
 @task(log_stdout=True)
 def add(x, y):
-    code= "%let sas_x = " + str(x) +";%let sas_y = " + str(y) + ";data result;sas_z = &sas_x-&sas_y;run;"
-    return code
+    dsName = "ADD" + str(x)
+    code= "%let sas_x = " + str(x) + ";%let sas_y = " + str(y) + ";data " + dsName + ";sas_z = &sas_x-&sas_y;run;"
+    return dsName + ":" + code
 
 
 @task(log_stdout=True)
