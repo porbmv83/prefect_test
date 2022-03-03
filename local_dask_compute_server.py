@@ -51,7 +51,7 @@ def connectToComputeServer():
 
 @task(log_stdout=True)
 def runSASCode(code, server, session_id, authheader):
-    data = "{\"code\" : \"" + str(code.encode('unicode_escape')) + "\"}"
+    data = "{\"code\" : \"" + code + "\"}"
     url = server + '/compute/sessions/' + session_id + '/jobs'
     print(url)
     print(data)
@@ -81,13 +81,7 @@ def inc(x, session_id):
 
     print("Python value for inc: "+str(x))
 
-    code = ("%let sas_x = " + str(x) + ";" +
-            """
-		    data _null_;
-			    sas_z = &sas_x+1;
-			    call symput('sas_z', sas_z);
-		    run; 
-	        """)
+    code = "%let sas_x = " + str(x) + ";data _null_;sas_z = &sas_x+1;call symput('sas_z', sas_z);run;"
     return code
 
 
