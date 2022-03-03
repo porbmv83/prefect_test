@@ -114,7 +114,7 @@ with Flow(FLOW_NAME,
     authheader = ''
     session_id, authheader = connectToComputeServer()
 
-    iterations = 20
+    iterations = 10
     servlist = [server] * iterations
     sessionlist = [session_id] * iterations
     authlist = [authheader] * iterations
