@@ -52,7 +52,7 @@ def connectToComputeServer():
     return session_id
 
 def runSASCode(code):
-    data = "{\"code\" : \"" + code + "\""
+    data = "{\"code\" : \"" + str(code) + "\""
     url = server + '/compute/sessions/' + session_id + '/jobs'
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
     job_id = resp.json().get('id')
