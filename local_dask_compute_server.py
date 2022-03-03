@@ -71,8 +71,7 @@ def runSASCode(code, server, session_id, authheader):
 
     resp = requests.get(url=url, headers=authheader, verify=False)
     val = resp.json().get('items')[0].get('cells')[0]
-    print(code)
-    print("SAS code return value:" + str(val))
+    print("SAS code:" + code + " return value: "+ str(val))
     return val
 
 @task(log_stdout=True)
