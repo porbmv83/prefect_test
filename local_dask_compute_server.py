@@ -81,51 +81,21 @@ def runSASCode(code, server, session_id, authheader):
 
 @task(log_stdout=True)
 def inc(x):
-
-    print("Python value for inc: "+str(x))
-
     code = "%let sas_x = " + str(x) + ";data result;sas_z = &sas_x+1;put 'result=' sas_z;run;"
     return code
 
 
 
-# @task(log_stdout=True)
-# def dec(x):
-#     print("Python value for dec: "+str(x))
-#     sas = saspy.SASsession()
-#     sas.symput('sas_x', x)
-#     r = sas.submit("""
-# 		%put DEC: Python value is: &sas_x;
-# 		data _null_;
-# 			sas_z = &sas_x-1;
-# 			call symput('sas_z', sas_z);
-# 		run;
-# 	""")
-#     z = sas.symget('sas_z')
-#     print(r['LOG'])
-#     sas.endsas()
-#     print('DEC: SAS value is: ' + str(z))
-#     return z
-#
-#
-# @task(log_stdout=True)
-# def add(x, y):
-#     print("Python value for add: "+str(x)+str(y))
-#     sas = saspy.SASsession()
-#     sas.symput('sas_x', x)
-#     sas.symput('sas_y', y)
-#     r = sas.submit("""
-# 		%put ADD: Python value is: &sas_x and &sas_y;
-# 		data _null_;
-# 			sas_z = &sas_x-&sas_y;
-# 			call symput('sas_z', sas_z);
-# 		run;
-# 	""")
-#     z = sas.symget('sas_z')
-#     print(r['LOG'])
-#     sas.endsas()
-#     print('DEC: SAS value is: ' + str(z))
-#     return z
+@task(log_stdout=True)
+def dec(x):
+    code= "%let sas_x = " + str(x) + ";data result;sas_z = &sas_x-1;put 'result=' sas_z;run;"
+    return code
+
+
+@task(log_stdout=True)
+def add(x, y):
+    code= "%let sas_x = " + str(x) +";%let sas_y = " + str(y) + ";data result;sas_z = &sas_x-&sas_y;run;"
+    return code
 
 
 @task(log_stdout=True)
@@ -140,10 +110,20 @@ with Flow(FLOW_NAME,
     server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
     authheader = ''
     session_id, authheader = connectToComputeServer()
-    numInc = 10
-    code = inc.map(x=range(numInc))
-    servlist = [server] * numInc
-    sessionlist = [session_id] * numInc
-    authlist = [authheader] * numInc
-    sums = runSASCode.map(code=code, server=servlist, session_id=sessionlist, authheader=authlist)
 
+    iterations = 10
+    servlist = [server] * iterations
+    sessionlist = [session_id] * iterations
+    authlist = [authheader] * iterations
+
+    incode = inc.map(x=range(iterations))
+    incs = runSASCode.map(code=incode, server=servlist, session_id=sessionlist, authheader=authlist)
+
+    deccode = dec.map(x=range(iterations))
+    decs = runSASCode.map(code=deccode, server=servlist, session_id=sessionlist, authheader=authlist)
+
+    addcode = add.map(x=incs, y=decs)
+    adds = runSASCode.map(code=addcode, server=servlist, session_id=sessionlist, authheader=authlist)
+    total = list_sum(adds)
+
+    print(total)
