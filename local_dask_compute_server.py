@@ -53,7 +53,10 @@ def connectToComputeServer():
 def runSASCode(code, server, session_id, authheader):
     data = "{\"code\" : \"" + code + "\""
     url = server + '/compute/sessions/' + session_id + '/jobs'
+    print(url)
+    print(authheader)
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
+    print(resp.json())
     job_id = resp.json().get('id')
 
     # Get the job state (poll until it has completed)
