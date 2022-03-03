@@ -1,4 +1,4 @@
-from prefect import task, Flow, flatten
+from prefect import task, Flow
 from prefect.executors import LocalDaskExecutor
 from prefect.run_configs import KubernetesRun
 #from dask_kubernetes import make_pod_spec
@@ -139,6 +139,5 @@ with Flow(FLOW_NAME,
     session_id, authheader = connectToComputeServer()
 
     code = inc.map(x=range(10))
-    print(code)
-#    sums = runSASCode.map(code=flatten(code), server=server, session_id=session_id, authheader=authheader)
+    sums = runSASCode.map(code=code, server=server, session_id=session_id, authheader=authheader)
 
