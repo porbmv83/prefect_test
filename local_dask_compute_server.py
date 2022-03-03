@@ -76,8 +76,9 @@ def runSASCode(code, server, session_id, authheader):
     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/RESULT/rows"
 
     resp = requests.get(url=url, headers=authheader, verify=False)
-    return resp.json().get('items')[0].get('cells')[0]
-
+    val = resp.json().get('items')[0].get('cells')[0]
+    print("SAS code return value:" + str(val))
+    return val
 
 @task(log_stdout=True)
 def inc(x):
