@@ -103,9 +103,9 @@ def add(x, y):
 
 @task(log_stdout=True)
 def list_sum(arr):
-    sum = sum(arr)
-    print("Final sum:" + str(sum))
-    return sum
+    totalsum = sum(arr)
+    print("Final sum:" + str(totalsum))
+    return totalsum
 
 
 with Flow(FLOW_NAME,
