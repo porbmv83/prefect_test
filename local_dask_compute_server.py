@@ -52,7 +52,7 @@ def connectToComputeServer():
     return session_id
 
 def runSASCode(code):
-    data = "{\"code\" : \"" + str(code) + "\""
+    data = "{\"code\" : \"" + code + "\""
     url = server + '/compute/sessions/' + session_id + '/jobs'
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
     job_id = resp.json().get('id')
@@ -79,7 +79,7 @@ def inc(x, session_id):
 
     print("Python value for inc: "+str(x))
 
-    code = ("%let sas_x = " + x + ";" +
+    code = ("%let sas_x = " + str(x) + ";" +
             """"
 		    data _null_;
 			    sas_z = &sas_x+1;
