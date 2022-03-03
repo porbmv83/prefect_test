@@ -138,6 +138,6 @@ with Flow(FLOW_NAME,
     authheader = ''
     session_id, authheader = connectToComputeServer()
 
-    code = inc.map(x=range(100), session_id=session_id)
+    code = inc.map(x=range(10), session_id=session_id)
     sums = runSASCode.map(code, server, session_id, authheader)
 
