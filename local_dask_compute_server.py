@@ -87,7 +87,7 @@ def inc(x, session_id):
 			    call symput('sas_z', sas_z);
 		    run; 
 	        """)
-    runSASCode(code)
+    runSASCode.run(code)
 
 
 
