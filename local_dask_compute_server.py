@@ -63,17 +63,17 @@ def runSASCode(code, server, session_id, authheader):
     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + '/state'
     state = 'running'
     while state == 'running':
+        time.sleep(1)
         resp = requests.get(url=url, headers=authheader, verify=False)
         state = resp.content.decode("utf-8")
         print('The state is:' + state)
-        time.sleep(10)
 
-    # Get the log for the job
-    url = server + '/compute/sessions/' + session_id + '/log/' + job_id
 
-    authheader['Accept'] = 'text/plain'
+    # Get the results for the job
+    url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/RESULT/rows"
+
     resp = requests.get(url=url, headers=authheader, verify=False)
-    print(resp.content.decode("utf-8"))
+    print(resp.json().get('items'))
 
 
 @task(log_stdout=True)
@@ -81,7 +81,7 @@ def inc(x, session_id):
 
     print("Python value for inc: "+str(x))
 
-    code = "%let sas_x = " + str(x) + ";data _null_;sas_z = &sas_x+1;call symput('sas_z', sas_z);run;"
+    code = "%let sas_x = " + str(x) + ";data result;sas_z = &sas_x+1;put 'result=' sas_z;run;"
     return code
 
 
