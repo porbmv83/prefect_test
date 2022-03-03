@@ -49,42 +49,11 @@ def connectToComputeServer():
     print("Got a compute server session:" + session_id)
     return session_id, authheader
 
-# @task(log_stdout=True)
-# def runSASCode(code, server, session_id, authheader):
-#     print(code)
-#     print(server)
-#     print(session_id)
-#     data = "{\"code\" : \"" + code + "\"}"
-#     url = server + '/compute/sessions/' + session_id + '/jobs'
-#     print(url)
-#     print(data)
-#     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
-#     print(resp.json())
-#     job_id = resp.json().get('id')
-#
-#     # Get the job state (poll until it has completed)
-#     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + '/state'
-#     state = 'running'
-#     while state == 'running':
-#         time.sleep(1)
-#         resp = requests.get(url=url, headers=authheader, verify=False)
-#         state = resp.content.decode("utf-8")
-#         print('The state is:' + state)
-#
-#
-#     # Get the results for the job
-#     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/RESULT/rows"
-#
-#     resp = requests.get(url=url, headers=authheader, verify=False)
-#     return resp.json().get('items')[0].get('cells')[0]
-
-
 @task(log_stdout=True)
-def inc(x,server, session_id, authheader):
-
-    print("Python value for inc: "+str(x))
-
-    code = "%let sas_x = " + str(x) + ";data result;sas_z = &sas_x+1;put 'result=' sas_z;run;"
+def runSASCode(code, server, session_id, authheader):
+    print(code)
+    print(server)
+    print(session_id)
     data = "{\"code\" : \"" + code + "\"}"
     url = server + '/compute/sessions/' + session_id + '/jobs'
     print(url)
@@ -102,11 +71,21 @@ def inc(x,server, session_id, authheader):
         state = resp.content.decode("utf-8")
         print('The state is:' + state)
 
+
     # Get the results for the job
     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/RESULT/rows"
 
     resp = requests.get(url=url, headers=authheader, verify=False)
     return resp.json().get('items')[0].get('cells')[0]
+
+
+@task(log_stdout=True)
+def inc(x):
+
+    print("Python value for inc: "+str(x))
+
+    code = "%let sas_x = " + str(x) + ";data result;sas_z = &sas_x+1;put 'result=' sas_z;run;"
+    return code
 
 
 
@@ -161,8 +140,10 @@ with Flow(FLOW_NAME,
     server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
     authheader = ''
     session_id, authheader = connectToComputeServer()
-    servlist = [server]*10
-    sessionlist = [session_id] * 10
-    authlist = [authheader] * 10
-    inc = inc.map(x=range(10), server=servlist, session_id=sessionlist, authheader=authlist)
+    numInc = 10
+    code = inc.map(x=range(numInc))
+    servlist = [server] * numInc
+    sessionlist = [session_id] * numInc
+    authlist = [authheader] * numInc
+    sums = runSASCode.map(code=code, server=servlist, session_id=sessionlist, authheader=authlist)
 
