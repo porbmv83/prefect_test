@@ -54,7 +54,7 @@ def runSASCode(code, server, session_id, authheader):
     data = "{\"code\" : \"" + code + "\"}"
     url = server + '/compute/sessions/' + session_id + '/jobs'
     print(url)
-    print(code)
+    print(data)
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
     print(resp.json())
     job_id = resp.json().get('id')
@@ -82,7 +82,7 @@ def inc(x, session_id):
     print("Python value for inc: "+str(x))
 
     code = ("%let sas_x = " + str(x) + ";" +
-            """"
+            """
 		    data _null_;
 			    sas_z = &sas_x+1;
 			    call symput('sas_z', sas_z);
