@@ -73,7 +73,7 @@ def runSASCode(code, server, session_id, authheader):
     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/RESULT/rows"
 
     resp = requests.get(url=url, headers=authheader, verify=False)
-    print(resp.json().get('items')[0].get('cells')[0])
+    return resp.json().get('items')[0].get('cells')[0]
 
 
 @task(log_stdout=True)
@@ -137,6 +137,7 @@ with Flow(FLOW_NAME,
     server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
     authheader = ''
     session_id, authheader = connectToComputeServer()
-    code = inc(x=1, session_id=session_id)
-    runSASCode(code, server, session_id, authheader)
+
+    code = inc.map(x=range(100), session_id=session_id)
+    sums = runSASCode.map(code, server, session_id, authheader)
 
