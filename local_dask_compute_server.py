@@ -28,7 +28,7 @@ RUN_CONFIG = KubernetesRun(
     labels=["porbmv"],
 )
 
-@task(log_stdout=True)
+@task(log_stdout=True, nout=2)
 def connectToComputeServer():
     # Log on to sas
     url = server + '/SASLogon/oauth/token/'
