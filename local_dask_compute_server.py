@@ -73,7 +73,7 @@ def runSASCode(code, server, session_id, authheader):
     url = server + '/compute/sessions/' + session_id + '/jobs/' + job_id + "/data/WORK/RESULT/rows"
 
     resp = requests.get(url=url, headers=authheader, verify=False)
-    print(resp.json().get('items')[0])
+    print(resp.json().get('items')[0].get('cells')[0])
 
 
 @task(log_stdout=True)
