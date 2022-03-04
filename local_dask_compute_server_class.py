@@ -27,8 +27,8 @@ RUN_CONFIG = KubernetesRun(
     labels=["porbmv"],
 )
 
-@task(log_stdout=True, nout=2)
-def connectToComputeServer():
+@task(log_stdout=True, nout=3)
+def connectToComputeServer(url, numiterations):
     # Log on to sas
     url = server + '/SASLogon/oauth/token/'
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -46,7 +46,7 @@ def connectToComputeServer():
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
     session_id = resp.json().get('id')
     print("Got a compute server session:" + session_id)
-    return session_id, authheader
+    return [url]*numiterations, [session_id]*numiterations, [authheader]*numiterations
 
 def runSASCode(code, server, session_id, authheader):
 #    Since work is shared by all the code we have to write to unique datasets (expecting a string - datasetName:code to run)
@@ -115,14 +115,12 @@ with Flow(FLOW_NAME,
           storage=STORAGE,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
-    server = 'https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com'
-    authheader = ''
-    session_id, authheader = connectToComputeServer()
-
     iterations = 100
-    incs = inc.map(x=range(iterations), server=[server] * iterations, session_id=[session_id] * iterations, authheader=[authheader] * iterations)
-    decs = dec.map(x=range(iterations), server=[server] * iterations, session_id=[session_id] * iterations, authheader=[authheader] * iterations)
-    adds = add.map(x=incs, y=decs,server=[server] * iterations, session_id=[session_id] * iterations, authheader=[authheader] * iterations)
+    server, session_id, authheader = connectToComputeServer('https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com', iterations)
+
+    incs = inc.map(x=range(iterations), server=server, session_id=session_id, authheader=authheader)
+    decs = dec.map(x=range(iterations), server=server, session_id=session_id, authheader=authheader)
+    adds = add.map(x=incs, y=decs,server=server, session_id=session_id, authheader=authheader)
     total = list_sum(adds)
     disconnectFromComputeServer(total, server, session_id, authheader)
     print(total)
