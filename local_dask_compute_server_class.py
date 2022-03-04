@@ -106,7 +106,7 @@ def list_sum(arr):
     return totalsum
 
 @task(log_stdout=True)
-def disconnectFromComputeServer(total, server, session_id)
+def disconnectFromComputeServer(total, server, session_id):
     # Delete the sas compute server session
     url = server + '/compute/sessions/' + session_id
     requests.delete(url=url, headers=authheader, verify=False)
