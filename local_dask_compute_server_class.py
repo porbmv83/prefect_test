@@ -120,13 +120,9 @@ with Flow(FLOW_NAME,
     session_id, authheader = connectToComputeServer()
 
     iterations = 100
-    servlist = [server] * iterations
-    sessionlist = [session_id] * iterations
-    authlist = [authheader] * iterations
-
-    incs = inc.map(x=range(iterations), server=servlist, session_id=sessionlist, authheader=authlist)
-    decs = dec.map(x=range(iterations), server=servlist, session_id=sessionlist, authheader=authlist)
-    adds = add.map(x=incs, y=decs,server=servlist, session_id=sessionlist, authheader=authlist)
+    incs = inc.map(x=range(iterations), server=[server] * iterations, session_id=[session_id] * iterations, authheader=[authheader] * iterations)
+    decs = dec.map(x=range(iterations), server=[server] * iterations, session_id=[session_id] * iterations, authheader=[authheader] * iterations)
+    adds = add.map(x=incs, y=decs,server=[server] * iterations, session_id=[session_id] * iterations, authheader=[authheader] * iterations)
     total = list_sum(adds)
     disconnectFromComputeServer(total, server, session_id, authheader)
     print(total)
