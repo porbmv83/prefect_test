@@ -122,5 +122,5 @@ with Flow(FLOW_NAME,
     decs = dec.map(x=range(iterations), server=server, session_id=session_id, authheader=authheader)
     adds = add.map(x=incs, y=decs,server=server, session_id=session_id, authheader=authheader)
     total = list_sum(adds)
-    disconnectFromComputeServer(total, server, session_id, authheader)
+    disconnectFromComputeServer(total, server[0], session_id[0], authheader[0])
     print(total)
