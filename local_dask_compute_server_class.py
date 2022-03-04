@@ -105,6 +105,11 @@ def list_sum(arr):
     print("Final sum:" + str(totalsum))
     return totalsum
 
+@task(log_stdout=True)
+def disconnectFromComputeServer(total, server, session_id)
+    # Delete the sas compute server session
+    url = server + '/compute/sessions/' + session_id
+    requests.delete(url=url, headers=authheader, verify=False)
 
 with Flow(FLOW_NAME,
           storage=STORAGE,
@@ -120,13 +125,8 @@ with Flow(FLOW_NAME,
     authlist = [authheader] * iterations
 
     incs = inc.map(x=range(iterations), server=servlist, session_id=sessionlist, authheader=authlist)
-#    incs = runSASCode.map(code=incode, server=servlist, session_id=sessionlist, authheader=authlist)
-
     decs = dec.map(x=range(iterations), server=servlist, session_id=sessionlist, authheader=authlist)
-#    decs = runSASCode.map(code=deccode, server=servlist, session_id=sessionlist, authheader=authlist)
-
     adds = add.map(x=incs, y=decs,server=servlist, session_id=sessionlist, authheader=authlist)
-#    adds = runSASCode.map(code=addcode, server=servlist, session_id=sessionlist, authheader=authlist)
     total = list_sum(adds)
-
+    disconnectFromComputeServer(total, server, session_id)
     print(total)
