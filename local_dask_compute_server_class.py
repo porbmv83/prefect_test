@@ -27,7 +27,7 @@ RUN_CONFIG = KubernetesRun(
     labels=["porbmv"],
 )
 
-@task(log_stdout=True, nout=3)
+@task(log_stdout=True)
 def connectToComputeServer(server, numiterations):
     # Log on to sas
     url = server + '/SASLogon/oauth/token/'
@@ -46,10 +46,14 @@ def connectToComputeServer(server, numiterations):
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
     session_id = resp.json().get('id')
     print("Got a compute server session:" + session_id)
-    return [server]*numiterations, [session_id]*numiterations, [authheader]*numiterations
+    result = {'server':server, 'session_id':session_id, 'authheader':authheader}
+    return [result]*numiterations
 
-def runSASCode(code, server, session_id, authheader):
+def runSASCode(code, con):
 #    Since work is shared by all the code we have to write to unique datasets (expecting a string - datasetName:code to run)
+    server = con.get("server")
+    session_id = con.get("session_id")
+    authheader = con.get("authheader")
     split = code.split(':')
     code = split[1]
     data = "{\"code\" : \"" + code + "\"}"
@@ -77,26 +81,26 @@ def runSASCode(code, server, session_id, authheader):
     return val
 
 @task(log_stdout=True)
-def inc(x,server, session_id, authheader):
+def inc(x,con):
     dsName = "INC" + str(x)
 
     code = "%let sas_x = " + str(x) + ";data " + dsName + ";sas_z = &sas_x+1;put 'result=' sas_z;run;"
-    return runSASCode(dsName + ":" + code,server, session_id, authheader)
+    return runSASCode(dsName + ":" + code,con)
 
 
 
 @task(log_stdout=True)
-def dec(x,server, session_id, authheader):
+def dec(x,con):
     dsName = "DEC" + str(x)
     code= "%let sas_x = " + str(x) + ";data " + dsName + ";sas_z = &sas_x-1;put 'result=' sas_z;run;"
-    return runSASCode(dsName + ":" + code,server, session_id, authheader)
+    return runSASCode(dsName + ":" + code,con)
 
 
 @task(log_stdout=True)
-def add(x, y, server, session_id, authheader):
+def add(x, y, con):
     dsName = "ADD" + str(x)
     code= "%let sas_x = " + str(x) + ";%let sas_y = " + str(y) + ";data " + dsName + ";sas_z = &sas_x-&sas_y;run;"
-    return runSASCode(dsName + ":" + code,server, session_id, authheader)
+    return runSASCode(dsName + ":" + code,con)
 
 
 @task(log_stdout=True)
@@ -106,7 +110,10 @@ def list_sum(arr):
     return totalsum
 
 @task(log_stdout=True)
-def disconnectFromComputeServer(total, server, session_id, authheader):
+def disconnectFromComputeServer(total, con):
+    server = con.get("server")
+    session_id = con.get("session_id")
+    authheader = con.get("authheader")
     # Delete the sas compute server session
     url = server + '/compute/sessions/' + session_id
     requests.delete(url=url, headers=authheader, verify=False)
@@ -116,11 +123,11 @@ with Flow(FLOW_NAME,
           run_config=RUN_CONFIG,
           executor=EXECUTOR,) as flow:
     iterations = 100
-    server, session_id, authheader = connectToComputeServer('https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com', iterations)
+    con = connectToComputeServer('https://d44242.rqs2porbmv-azure-nginx-a8329399.unx.sas.com', iterations)
 
-    incs = inc.map(x=range(iterations), server=server, session_id=session_id, authheader=authheader)
-    decs = dec.map(x=range(iterations), server=server, session_id=session_id, authheader=authheader)
-    adds = add.map(x=incs, y=decs,server=server, session_id=session_id, authheader=authheader)
+    incs = inc.map(x=range(iterations), con=con)
+    decs = dec.map(x=range(iterations), con=con)
+    adds = add.map(x=incs, y=decs,con=con)
     total = list_sum(adds)
-    disconnectFromComputeServer(total, server[0], session_id[0], authheader[0])
+    disconnectFromComputeServer(total, con[0])
     print(total)
