@@ -28,7 +28,7 @@ RUN_CONFIG = KubernetesRun(
 )
 
 @task(log_stdout=True, nout=3)
-def connectToComputeServer(url, numiterations):
+def connectToComputeServer(server, numiterations):
     # Log on to sas
     url = server + '/SASLogon/oauth/token/'
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -46,7 +46,7 @@ def connectToComputeServer(url, numiterations):
     resp = requests.post(url=url, headers=authheader, data=data, verify=False)
     session_id = resp.json().get('id')
     print("Got a compute server session:" + session_id)
-    return [url]*numiterations, [session_id]*numiterations, [authheader]*numiterations
+    return [server]*numiterations, [session_id]*numiterations, [authheader]*numiterations
 
 def runSASCode(code, server, session_id, authheader):
 #    Since work is shared by all the code we have to write to unique datasets (expecting a string - datasetName:code to run)
