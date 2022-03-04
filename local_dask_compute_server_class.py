@@ -9,7 +9,7 @@ import time
 
 
 
-FLOW_NAME = "local_dask_compute_server"
+FLOW_NAME = "local_dask_compute_server_class"
 STORAGE = GitHub(
     repo="porbmv83/prefect_test",
     path=f"{FLOW_NAME}.py",
