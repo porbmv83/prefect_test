@@ -14,8 +14,7 @@ STORAGE = GitHub(
 )
 
 EXECUTOR = LocalDaskExecutor(
-    scheduler="threads",
-    num_workers=8,
+    scheduler="processes",
 )
 
 RUN_CONFIG = KubernetesRun(
